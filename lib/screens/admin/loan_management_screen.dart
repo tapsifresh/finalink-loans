@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/loan.dart';
+import '../../services/csv_export_service.dart';
 import '../../services/loan_service.dart';
 
 class LoanManagementScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class LoanManagementScreen extends StatefulWidget {
 class _LoanManagementScreenState extends State<LoanManagementScreen> {
   final _loanService = LoanService();
   late Future<List<Loan>> _loansFuture;
+  bool _isExporting = false;
 
   @override
   void initState() {
@@ -38,6 +40,46 @@ class _LoanManagementScreenState extends State<LoanManagementScreen> {
     }
   }
 
+  Future<void> _exportCsv() async {
+    setState(() => _isExporting = true);
+    try {
+      final loans = await _loanService.fetchAllLoans();
+      if (loans.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No loans to export.')),
+          );
+        }
+        return;
+      }
+
+      final csv = CsvExportService.loansToCsv(loans);
+      final filename = CsvExportService.buildFilename();
+      final downloaded = await CsvExportService.download(csv, filename);
+
+      if (!mounted) return;
+      if (downloaded) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Exported $filename')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('CSV copied to clipboard. Paste it into Excel or Google Sheets.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
+
   Future<void> _markPaid(Loan loan) async {
     try {
       await _loanService.markPaid(loan.id);
@@ -57,6 +99,17 @@ class _LoanManagementScreenState extends State<LoanManagementScreen> {
       appBar: AppBar(
         title: const Text('Loan Management'),
         actions: [
+          IconButton(
+            icon: _isExporting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.download),
+            tooltip: 'Export loans to CSV',
+            onPressed: _isExporting ? null : _exportCsv,
+          ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _refresh),
         ],
       ),
