@@ -157,9 +157,9 @@ class _LoanManagementScreenState extends State<LoanManagementScreen> {
                           ),
                           Chip(
                             label: Text(loan.status),
-                            backgroundColor: statusColor.withValues(alpha: 0.12),
+                            backgroundColor: statusColor.withOpacity(0.12),
                             labelStyle: TextStyle(color: statusColor, fontWeight: FontWeight.w600),
-                            side: BorderSide(color: statusColor.withValues(alpha: 0.3)),
+                            side: BorderSide(color: statusColor.withOpacity(0.3)),
                           ),
                         ],
                       ),

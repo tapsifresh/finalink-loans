@@ -96,7 +96,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
                       ),
                       const SizedBox(height: 24),
                       DropdownButtonFormField<String>(
-                        initialValue: _loanType,
+                        value: _loanType,
                         decoration: const InputDecoration(
                           labelText: 'Loan Type',
                           prefixIcon: Icon(Icons.category_outlined),
@@ -129,7 +129,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
-                        initialValue: _termWeeks,
+                        value: _termWeeks,
                         decoration: const InputDecoration(
                           labelText: 'Loan Term',
                           prefixIcon: Icon(Icons.schedule_outlined),

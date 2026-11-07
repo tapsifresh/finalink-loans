@@ -120,7 +120,7 @@ class _HeroSection extends StatelessWidget {
           SizedBox(
             width: isWide ? 360 : double.infinity,
             child: Card(
-              color: Colors.white.withValues(alpha: 0.12),
+              color: Colors.white.withOpacity(0.12),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
